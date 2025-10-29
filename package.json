@@ -1,0 +1,21 @@
+{
+  "name": "my-first-server",
+  "version": "1.0.0",
+  "description": "Create and host a simple Node.js server that returns a basic HTML page.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jarvf/my-first-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jarvf/my-first-server/issues"
+  },
+  "homepage": "https://github.com/jarvf/my-first-server#readme"
+}
