@@ -5,23 +5,39 @@ const path = require('path');
 
 const PORT = process.env.PORT || 3000;
 
-const server = http.createServer((req, res) => {
-    if (req.url === '/') {
-        fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
-            if (err) {
-                res.writeHead(500, { 'Content-Type': 'text/plain' });
-                res.end('Error loading page');
-            } else {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.end(data);
-            }
-        });
-    } else {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('Page Not Found');
-    }
-});
+const TEXT_EXTS = new Set(['.html', '.css', '.js', '.json', '.txt', '.svg']);
 
-server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+const MIME = {
+  '.html': 'text/html',
+  '.css':  'text/css',
+  '.js':   'application/javascript',
+  '.png':  'image/png',
+  '.jpg':  'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.svg':  'image/svg+xml',
+  '.ico':  'image/x-icon',
+  '.json': 'application/json',
+  '.txt':  'text/plain'
+};
+
+http.createServer((req, res) => {
+  const reqPath = req.url === '/' ? '/index.html' : req.url;
+  const safePath = path.normalize(reqPath).replace(/^(\.\.[/\\])+/, '');
+  const filePath = path.join(__dirname, safePath);
+  const ext = path.extname(filePath).toLowerCase();
+  const baseType = MIME[ext] || 'application/octet-stream';
+  const isText = TEXT_EXTS.has(ext);
+
+  fs.readFile(filePath, isText ? 'utf8' : null, (err, data) => {
+    if (err) {
+      res.writeHead(err.code === 'ENOENT' ? 404 : 500, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end(err.code === 'ENOENT' ? '404 Not Found' : '500 Server Error');
+      return;
+    }
+    const headers = { 'Content-Type': isText ? `${baseType}; charset=utf-8` : baseType };
+    res.writeHead(200, headers);
+    res.end(data);
+  });
+}).listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
