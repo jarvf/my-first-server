@@ -1,18 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My First Server</title>
-    <style>
-        /* Your CSS goes here */
-    </style>
+<head><title> Jarvey's Spooky Server 🎃</title>
+  <style>
+    /* theme colors */
+    :root{
+      --bg: #0b0b0f;
+      --card: #14141c;
+      --text: #f3f3f3;
+      --muted: #b8b8c7;
+      --accent: #ff7a00;   
+      --glow: rgba(255, 122, 0, 0.35);
+    }
+    .theme-light{
+      --bg: #fff9f3;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #4b4b55;
+      --accent: #8b5cf6;   
+      --glow: rgba(139, 92, 246, 0.25);
+    }
+
+    /* layout */
+    *{ box-sizing: border-box; }
+    html, body{ margin:0; padding:0; }
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans';
+      background: radial-gradient(1000px 600px at 50% -20%, var(--glow), transparent 60%), var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      position: relative;
+      overflow-x: hidden;
+    }
+    .container{
+      width: min(960px, 92vw);
+      margin-inline: auto;
+      padding: 1.25rem;
+      position: relative;
+      z-index: 2; 
+    }
+
+    /* very spooky gif overlay */
+    .ghost-overlay{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 1;
+      background-image: url("https://i.pinimg.com/originals/cd/12/71/cd127168874398a0d8ad016a08fe93a2.gif");
+      background-size: 380px auto;
+      background-repeat: repeat;
+      background-position: center;
+      mix-blend-mode: screen;    
+      transition: opacity .45s ease;
+    }
+    .ghost-overlay.show{
+      opacity: .18; 
+    }
+
+    /* text card stuff */
+    .title{
+      font-size: clamp(2rem, 4vw + 1rem, 3rem);
+      margin: .25rem 0 .25rem;
+      text-align: center;
+      text-shadow: 0 0 16px var(--glow);
+      animation: headingGlow 3.5s ease-in-out infinite;
+    }
+    .subtitle{
+      color: var(--muted);
+      margin: 0 0 1rem;
+      text-align: center;
+    }
+    .card{
+      background: var(--card);
+      border: 1px solid color-mix(in lab, var(--accent) 18%, transparent);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin: 1rem 0;
+      box-shadow: 0 10px 30px var(--glow);
+    }
+    .list{
+      margin: .5rem 0 0;
+      padding-left: 1rem;
+      color: var(--muted);
+    }
+
+    .btn{
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: .6rem 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px var(--glow);
+      transition: transform .12s ease, box-shadow .2s ease;
+      animation: btnPulse 4s ease-in-out infinite;
+    }
+    .btn:hover{ box-shadow: 0 10px 32px var(--glow); }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+
+    /* candy themes*/
+    .candy{
+      font-size: 56px;
+      width: 84px;
+      height: 84px;
+      display: grid;
+      place-items: center;
+      margin: .5rem auto;
+      border-radius: 50%;
+      background: color-mix(in lab, var(--accent) 18%, transparent);
+      box-shadow: 0 12px 34px var(--glow);
+      user-select: none;
+      transition: transform .08s ease;
+    }
+    .candy:active{ transform: scale(.95); }
+    .counter{
+      text-align: center;
+      margin-top: .25rem;
+      color: var(--muted);
+    }
+    .footer{
+      opacity: .85;
+      text-align: center;
+      padding-bottom: 2rem;
+    }
+    header {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center; 
+  text-align: center;
+}
+
+
+    /*  subtle keyframe animations*/
+    @keyframes btnPulse{
+      0%,100%{ transform: none; }
+      50%{ transform: translateY(-1px); }
+    }
+    @keyframes headingGlow{
+      0%,100%{ text-shadow: 0 0 12px var(--glow); }
+      50%{ text-shadow: 0 0 22px var(--glow); }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .btn, .title{ animation: none !important; }
+      .ghost-overlay{ transition: none !important; }
+    }
+  </style>
 </head>
-<body>
-    <!-- Your HTML goes here -->
-    
-    <script>
-        // Your javascript code (optional)
-    </script>
+<body class="theme-dark">
+  <div id="ghostOverlay" class="ghost-overlay" aria-hidden="true"></div>
+
+  <header class="container">
+    <h1 class="title">Spooky Server <span aria-hidden="true">🎃</span></h1>
+    <p class="subtitle">Jarvey's Spooky Scary Halloween Page</p>
+    <button id="toggleTheme" class="btn" aria-pressed="false">Toggle Lights</button>
+  </header>
+
+  <main class="container">
+
+    <section class="card">
+      <h3>Candy Counter <span aria-hidden="true">🍬</span></h3>
+      <p>Click the candy to collect it. Every 5 candies, a ghostly surprise appears…</p>
+      <div id="candy" class="candy" role="button" aria-label="Candy to collect" tabindex="0">🍬</div>
+      <p class="counter">Candy collected: <span id="count">0</span></p>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <small>
+      Built by Jarvis, served by Node. Happy Halloween!
+    </small>
+  </footer>
+
+  <script>
+    (function(){
+      const toggle = document.getElementById('toggleTheme');
+      const root = document.body;
+      const ghost = document.getElementById('ghostOverlay');
+
+      /* toggle*/
+      const themeKey = 'spooky-theme';
+      const savedTheme = sessionStorage.getItem(themeKey);
+      if(savedTheme) root.className = savedTheme;
+
+      function setPressedAttr(){
+        toggle.setAttribute('aria-pressed', root.classList.contains('theme-light') ? 'true' : 'false');
+      }
+      setPressedAttr();
+
+      toggle.addEventListener('click', () => {
+        const next = root.classList.contains('theme-dark') ? 'theme-light' : 'theme-dark';
+        root.className = next;
+        sessionStorage.setItem(themeKey, next);
+        setPressedAttr();
+      });
+
+      /* counter section */
+      const candy = document.getElementById('candy');
+      const countEl = document.getElementById('count');
+      const countKey = 'candy-count';
+      let count = Number(sessionStorage.getItem(countKey) || 0);
+      countEl.textContent = count;
+
+      function showGhostOverlay(){
+        ghost.classList.add('show');
+        clearTimeout(showGhostOverlay._t);
+        showGhostOverlay._t = setTimeout(() => {
+          ghost.classList.remove('show');
+        }, 3000);
+      }
+
+      function bump(){
+        count += 1;
+        countEl.textContent = count;
+        sessionStorage.setItem(countKey, String(count));
+
+        candy.style.transform = 'scale(1.08)';
+        setTimeout(()=> candy.style.transform = '', 90);
+
+        if(count % 5 === 0){
+          showGhostOverlay();
+        }
+      }
+
+      candy.addEventListener('click', bump);
+      candy.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          bump();
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
